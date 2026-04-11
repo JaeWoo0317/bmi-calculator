@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI 계산기 — 체질량지수 계산 및 건강 상태 확인 | JWAY</title>
+<meta name="description" content="BMI(체질량지수) 무료 온라인 계산기. 키와 몸무게를 입력하면 BMI 지수, 비만도, 적정 체중, 권장 칼로리까지 한번에 확인할 수 있습니다.">
+<meta name="keywords" content="BMI 계산기, 체질량지수, 비만도 계산, 적정 체중, BMI 지수, 비만 계산, 다이어트, 건강 체중">
+<meta property="og:title" content="BMI 계산기 — 체질량지수·비만도·적정체중 | JWAY">
+<meta property="og:description" content="키와 몸무게로 BMI, 비만도, 적정체중을 즉시 계산합니다.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://jaewoo0317.github.io/bmi-calculator/">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F8F5;--surface:#FFF;--surface-alt:#E8F0EC;--text-primary:#0F2A1D;--text-secondary:#4A6B58;--text-tertiary:#8FA597;--accent:#059669;--accent-light:#D1FAE5;--accent-hover:#047857;--border:#D5DFD9;--shadow-md:0 4px 16px rgba(0,0,0,.06);--radius:14px;--radius-sm:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:100}.nav-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}.nav-logo{font-size:18px;font-weight:700;color:var(--text-primary);text-decoration:none}.nav-logo span{color:var(--accent)}.nav-links{display:flex;gap:14px;flex-wrap:wrap}.nav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;font-weight:500}.nav-links a:hover{color:var(--accent)}
+.header{text-align:center;padding:48px 20px 0}.header h1{font-size:clamp(28px,5vw,40px);font-weight:700;letter-spacing:-1.5px}.header h1 em{color:var(--accent);font-style:normal}.header p{font-size:15px;color:var(--text-secondary);max-width:460px;margin:8px auto 0}
+.container{max-width:760px;margin:32px auto;padding:0 20px 20px}
+.calc-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:28px 24px}
+.field-group{margin-bottom:20px}.field-label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.input-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+input[type="number"]{padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--text-primary);outline:none;transition:border-color .2s;background:var(--surface);width:140px;text-align:right}input[type="number"]:focus{border-color:var(--accent)}
+.input-unit{font-size:14px;color:var(--text-secondary);font-weight:500}
+.quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.quick-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-alt);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .2s}.quick-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent)}
+.gender-row{display:flex;gap:8px}
+.gender-btn{flex:1;padding:10px 0;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .2s}.gender-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);font-weight:600}
+.result-box{margin-top:24px;background:var(--accent-light);border:1.5px solid var(--accent);border-radius:var(--radius);padding:24px;text-align:center}
+.bmi-value{font-family:'JetBrains Mono',monospace;font-size:clamp(44px,7vw,64px);font-weight:700;color:var(--accent);line-height:1.1}
+.bmi-category{margin-top:6px;font-size:18px;font-weight:600;color:var(--text-primary)}
+.bmi-bar-wrapper{margin:20px auto 0;max-width:460px;background:var(--surface);border-radius:999px;height:14px;overflow:hidden;position:relative;border:1.5px solid var(--border)}
+.bmi-bar{position:absolute;top:0;bottom:0;width:3px;background:#0F2A1D;transition:left .4s;z-index:2}
+.bmi-bar-gradient{position:absolute;inset:0;background:linear-gradient(to right,#60A5FA 0%,#60A5FA 18%,#10B981 18%,#10B981 40%,#FBBF24 40%,#55%,#F97316 55%,#F97316 72%,#EF4444 72%,#EF4444 100%)}
+.bmi-bar-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--text-tertiary);font-family:'JetBrains Mono',monospace}
+.detail-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:20px}@media(min-width:520px){.detail-grid{grid-template-columns:1fr 1fr}}
+.detail-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px}
+.detail-label{font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.detail-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--text-primary)}
+.detail-sub{font-size:12px;color:var(--text-tertiary);margin-top:2px}
+.guide-section{margin-top:40px}.guide-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:32px 28px}.guide-card h2{font-size:20px;font-weight:700;margin:28px 0 12px}.guide-card h2:first-child{margin-top:0}.guide-card h3{font-size:16px;font-weight:700;margin:20px 0 8px}.guide-card p{font-size:14px;color:var(--text-secondary);line-height:1.9;margin-bottom:12px}.guide-card p:last-child{margin-bottom:0}
+.guide-table{width:100%;border-collapse:collapse;margin:16px 0}.guide-table th,.guide-table td{padding:10px 14px;font-size:14px;border-bottom:1px solid var(--surface-alt);text-align:left}.guide-table th{font-weight:600;background:var(--surface-alt)}.guide-table td{color:var(--text-secondary)}
+.guide-tip{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:14px;color:var(--text-secondary);line-height:1.8}.guide-tip strong{color:var(--text-primary)}
+.faq-section{margin-top:32px}.section-title{font-size:20px;font-weight:700;letter-spacing:-.8px;margin-bottom:16px}.faq-item{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}.faq-q{padding:16px 20px;font-size:15px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}.faq-q:hover{background:var(--surface-alt)}.faq-arrow{font-size:12px;color:var(--text-tertiary);transition:transform .3s}.faq-item.open .faq-arrow{transform:rotate(180deg)}.faq-a{max-height:0;overflow:hidden;transition:max-height .3s}.faq-a-inner{padding:0 20px 16px;font-size:14px;color:var(--text-secondary);line-height:1.8}.faq-item.open .faq-a{max-height:600px}
+.other-tools{margin-top:40px}.other-grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:520px){.other-grid{grid-template-columns:1fr 1fr 1fr}}.other-card{display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;text-decoration:none;color:var(--text-primary);transition:all .2s}.other-card:hover{border-color:var(--accent);transform:translateY(-2px)}.other-icon{font-size:24px}.other-name{font-size:15px;font-weight:600;margin-bottom:2px}.other-desc{font-size:12px;color:var(--text-secondary)}
+.ad-banner{border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center;margin-top:32px}
+.footer{margin-top:48px;background:var(--surface);border-top:1px solid var(--border);padding:32px 20px 20px}.footer-inner{max-width:760px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px}.footer-col{display:flex;flex-direction:column;gap:6px}.footer-col p{font-size:13px;color:var(--text-secondary);max-width:240px;line-height:1.6}.footer-col a{font-size:13px;color:var(--text-secondary);text-decoration:none}.footer-col a:hover{color:var(--accent)}.footer-logo{font-size:18px;font-weight:700;color:var(--text-primary);text-decoration:none;margin-bottom:6px}.footer-logo span{color:var(--accent)}.footer-bottom{max-width:760px;margin:16px auto 0;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text-tertiary);text-align:center}
+@media(max-width:480px){.header{padding:32px 16px 0}.container{padding:0 12px 16px}.calc-card,.guide-card{padding:20px 16px}.nav-links{gap:10px}.nav-links a{font-size:12px}}
+</style></head><body>
+<nav class="nav"><div class="nav-inner"><a href="https://jaewoo0317.github.io/" class="nav-logo">J<span>WAY</span></a><div class="nav-links"><a href="https://jaewoo0317.github.io/char-counter/">글자수</a><a href="https://jaewoo0317.github.io/date-calculator/">날짜</a><a href="https://jaewoo0317.github.io/percent-calculator/">퍼센트</a><a href="https://jaewoo0317.github.io/salary-calculator/">연봉</a><a href="https://jaewoo0317.github.io/bmi-calculator/">BMI</a><a href="https://jaewoo0317.github.io/exchange-rate/">환율</a><a href="https://jaewoo0317.github.io/unit-converter/">단위</a></div></div></nav>
+<header class="header"><h1>BMI <em>계산기</em></h1><p>키와 몸무게를 입력하면 BMI 지수, 비만도, 적정 체중 범위를 즉시 확인할 수 있습니다. 아시아-태평양 기준 적용.</p></header>
+<main class="container">
+<div class="calc-card">
+<div class="field-group"><label class="field-label">키 (cm)</label><div class="input-row"><input type="number" id="heightInput" value="170" min="50" max="250" step="0.1"><span class="input-unit">cm</span></div><div class="quick-btns"><button class="quick-btn" onclick="setH(150)">150</button><button class="quick-btn" onclick="setH(160)">160</button><button class="quick-btn" onclick="setH(170)">170</button><button class="quick-btn" onclick="setH(175)">175</button><button class="quick-btn" onclick="setH(180)">180</button></div></div>
+<div class="field-group"><label class="field-label">몸무게 (kg)</label><div class="input-row"><input type="number" id="weightInput" value="65" min="10" max="300" step="0.1"><span class="input-unit">kg</span></div><div class="quick-btns"><button class="quick-btn" onclick="setW(50)">50</button><button class="quick-btn" onclick="setW(60)">60</button><button class="quick-btn" onclick="setW(70)">70</button><button class="quick-btn" onclick="setW(80)">80</button></div></div>
+<div class="field-group"><label class="field-label">성별</label><div class="gender-row"><button class="gender-btn active" id="gMale" onclick="setGender('male')">남성</button><button class="gender-btn" id="gFemale" onclick="setGender('female')">여성</button></div></div>
+<div class="field-group"><label class="field-label">나이 (선택)</label><div class="input-row"><input type="number" id="ageInput" value="30" min="1" max="120"><span class="input-unit">세</span></div></div>
+<div class="result-box">
+<div class="bmi-value" id="bmiValue">22.5</div>
+<div class="bmi-category" id="bmiCategory">정상</div>
+<div class="bmi-bar-wrapper"><div class="bmi-bar-gradient"></div><div class="bmi-bar" id="bmiBar" style="left:50%"></div></div>
+<div class="bmi-bar-labels"><span>18.5</span><span>23</span><span>25</span><span>30</span><span>35</span></div>
+</div>
+<div class="detail-grid">
+<div class="detail-card"><div class="detail-label">적정 체중 범위</div><div class="detail-value" id="idealRange">53.5 ~ 66.5 kg</div><div class="detail-sub">BMI 18.5 ~ 23 기준</div></div>
+<div class="detail-card"><div class="detail-label">적정 체중과의 차이</div><div class="detail-value" id="diffValue">정상 범위</div><div class="detail-sub" id="diffSub">현재 체중: 65.0 kg</div></div>
+</div>
+</div>
+
+<div class="guide-section"><div class="guide-card">
+<h2>BMI(체질량지수)란 무엇인가?</h2>
+<p>BMI(Body Mass Index, 체질량지수)는 키와 몸무게를 이용해 체지방률을 간접적으로 추정하는 지표입니다. 1830년대 벨기에 통계학자 아돌프 케틀레(Adolphe Quetelet)가 처음 고안했으며, 현재 세계보건기구(WHO)를 포함한 대부분의 국제 보건기관에서 비만도 판정의 기본 기준으로 사용하고 있습니다. BMI는 계산이 간단하고 직관적이기 때문에 개인이 자신의 체중 상태를 빠르게 파악하는 데 유용합니다.</p>
+<p>BMI가 중요한 이유는 체중 자체보다 "키 대비 체중"이 건강에 더 의미 있는 지표이기 때문입니다. 예를 들어 키 150cm에 65kg인 사람과 키 180cm에 65kg인 사람은 같은 체중이라도 체형과 건강 위험이 완전히 다릅니다. BMI는 이러한 차이를 반영해 하나의 숫자로 비교할 수 있게 해줍니다.</p>
+
+<h2>BMI 계산 공식</h2>
+<p>BMI는 매우 간단한 공식으로 계산됩니다. 몸무게(kg)를 키(m)의 제곱으로 나누면 됩니다.</p>
+<div class="guide-tip"><strong>공식:</strong> BMI = 몸무게(kg) ÷ (키(m) × 키(m))<br>예: 키 170cm, 몸무게 65kg → 65 ÷ (1.70 × 1.70) = 22.49</div>
+<p>주의할 점은 키를 cm가 아닌 미터(m)로 변환해야 한다는 것입니다. 170cm라면 1.70m로 계산해야 합니다. 결과는 보통 소수점 첫째 자리까지 표기하며, 단위는 없습니다. 이 계산기는 입력만 하면 자동으로 정확한 값을 보여주므로 수식을 외울 필요는 없습니다.</p>
+
+<h2>한국인 BMI 기준과 WHO 기준의 차이</h2>
+<p>BMI 기준은 지역과 인종에 따라 약간씩 다릅니다. WHO의 국제 기준은 서양인을 대상으로 설정된 반면, 대한비만학회는 아시아-태평양 인종의 체형 특성을 반영한 별도 기준을 권장합니다. 아시아인은 같은 BMI라도 체지방률이 더 높고 복부비만 경향이 강해 당뇨·고혈압 위험이 일찍 증가하기 때문입니다.</p>
+<table class="guide-table"><thead><tr><th>분류</th><th>아시아-태평양 기준</th><th>WHO 기준</th></tr></thead><tbody><tr><td>저체중</td><td>&lt; 18.5</td><td>&lt; 18.5</td></tr><tr><td>정상</td><td>18.5 ~ 22.9</td><td>18.5 ~ 24.9</td></tr><tr><td>과체중</td><td>23 ~ 24.9</td><td>25 ~ 29.9</td></tr><tr><td>비만 1단계</td><td>25 ~ 29.9</td><td>30 ~ 34.9</td></tr><tr><td>비만 2단계</td><td>30 ~ 34.9</td><td>35 ~ 39.9</td></tr><tr><td>고도비만</td><td>≥ 35</td><td>≥ 40</td></tr></tbody></table>
+<p>이 계산기는 국내 보건복지부와 대한비만학회가 권장하는 아시아-태평양 기준을 사용합니다. 해외 기준을 참고하려는 경우 WHO 기준을 함께 고려할 수 있습니다.</p>
+
+<h2>BMI의 한계 — 근육과 체지방을 구분하지 못한다</h2>
+<p>BMI는 손쉽게 측정할 수 있다는 장점이 있지만, 몇 가지 중요한 한계가 있습니다. 가장 큰 문제는 근육과 지방의 무게를 구분하지 못한다는 점입니다. 운동선수처럼 근육량이 많은 사람은 체지방률이 낮아도 BMI가 높게 나올 수 있고, 반대로 근육량이 적고 지방이 많은 "마른 비만"의 경우 BMI가 정상이더라도 건강 위험이 높을 수 있습니다.</p>
+<p>또한 BMI는 복부비만이나 내장지방 여부를 반영하지 못합니다. 같은 BMI라도 복부에 지방이 몰려 있는 경우가 엉덩이와 허벅지에 분포한 경우보다 심혈관 위험이 훨씬 큽니다. 따라서 BMI는 체지방률, 허리둘레, 체성분 분석(InBody 등)과 함께 종합적으로 판단하는 것이 좋습니다.</p>
+
+<h2>적정 체중을 유지하는 법</h2>
+<p>BMI 18.5~22.9 범위에 머무는 것이 건강상 가장 이상적입니다. 적정 체중을 유지하려면 식단·운동·수면 세 축을 균형 있게 관리해야 합니다. 식단은 하루 세 끼 규칙적으로 먹되, 정제탄수화물과 당분을 줄이고 단백질·채소·통곡물 비중을 높이는 것이 기본입니다. "조금 덜 먹기"보다 "무엇을 먹느냐"가 더 중요합니다.</p>
+<p>운동은 유산소(주 150분 이상)와 근력(주 2~3회)을 병행해야 기초대사량을 유지할 수 있습니다. 근육량이 줄면 같은 식사량으로도 체중이 쉽게 증가하므로, 다이어트 중에도 근력 운동은 절대 포기해선 안 됩니다. 수면은 하루 7~8시간 확보하고, 수면 부족은 식욕 호르몬(렐린·그렐린)을 교란시켜 과식을 유발하므로 주의해야 합니다.</p>
+
+<h2>BMI 단계별 건강 관리 팁</h2>
+<h3>저체중 (BMI &lt; 18.5)</h3>
+<p>저체중은 면역력 저하, 골다공증, 영양 결핍 위험이 있습니다. 무조건 양을 늘리기보다 고영양 식단(견과류, 아보카도, 단백질 셰이크 등)과 근력 운동으로 근육량을 늘리는 방향이 건강합니다.</p>
+<h3>정상 (18.5 ~ 22.9)</h3>
+<p>현재 체중을 유지하는 것이 목표입니다. 꾸준한 운동과 균형 잡힌 식단으로 상태를 유지하되, 체지방률·허리둘레도 함께 체크하세요.</p>
+<h3>과체중·비만 1단계 (23 ~ 29.9)</h3>
+<p>체중의 5~10%만 감량해도 혈압·혈당·콜레스테롤이 크게 개선됩니다. 무리한 단식보다 하루 300~500kcal 적자를 꾸준히 만드는 방식이 지속 가능합니다.</p>
+<h3>비만 2단계 이상 (BMI ≥ 30)</h3>
+<p>이 단계에서는 자가 다이어트보다 의료진 상담이 권장됩니다. 비만 관련 질환(당뇨·고혈압·수면무호흡) 동반 여부를 반드시 확인하고, 필요시 체계적인 체중 감량 프로그램이나 약물 치료를 고려하세요.</p>
+</div></div>
+
+<div class="faq-section"><h2 class="section-title">자주 묻는 질문</h2>
+<div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>BMI가 정상이어도 건강하지 않을 수 있나요?</span><span class="faq-arrow">▼</span></div><div class="faq-a"><div class="faq-a-inner">네, 충분히 가능합니다. BMI가 정상 범위라도 체지방률이 높은 "마른 비만"이거나 내장지방이 많으면 당뇨·고혈압 위험이 높습니다. 반대로 근육량이 많아 BMI는 높지만 체지방률이 낮은 경우도 있습니다. BMI는 참고 지표 중 하나일 뿐이며, 체지방률과 허리둘레를 함께 확인하는 것이 좋습니다.</div></div></div>
+<div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>근육이 많은 사람도 BMI가 높게 나오나요?</span><span class="faq-arrow">▼</span></div><div class="faq-a"><div class="faq-a-inner">네, BMI는 근육과 지방의 무게를 구분하지 못하기 때문에 운동선수나 보디빌더는 체지방률이 낮아도 BMI가 과체중·비만으로 나올 수 있습니다. 이런 경우 BMI 수치 자체보다 체지방률(InBody 등 체성분 분석)이 더 정확한 건강 지표입니다.</div></div></div>
+<div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>아동과 청소년의 BMI 기준은 다른가요?</span><span class="faq-arrow">▼</span></div><div class="faq-a"><div class="faq-a-inner">네, 전혀 다릅니다. 성장기 아동·청소년은 성인용 BMI 기준을 적용하지 않고, 연령·성별별 BMI 백분위수(percentile)를 사용합니다. 대한소아과학회에서 발표한 소아청소년 성장도표를 기준으로 판정하며, 이 계산기는 성인 기준이므로 18세 이하에게는 적용하지 마세요.</div></div></div>
+<div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>임산부는 BMI 계산이 적합한가요?</span><span class="faq-arrow">▼</span></div><div class="faq-a"><div class="faq-a-inner">임신 중에는 BMI 계산을 권장하지 않습니다. 임신 전 BMI를 기준으로 적정 체중 증가량(정상 BMI 기준 11.5~16kg)이 별도로 정해져 있으므로, 산부인과 전문의와 상담하시는 것이 가장 안전합니다.</div></div></div>
+<div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>입력한 정보가 저장되나요?</span><span class="faq-arrow">▼</span></div><div class="faq-a"><div class="faq-a-inner">아니요. 모든 계산은 여러분의 브라우저 안에서만 이루어지며, 키·몸무게·성별·나이 어느 것도 외부 서버로 전송되지 않습니다. 페이지를 새로고침하면 입력값은 초기화됩니다.</div></div></div>
+</div>
+
+<section class="other-tools"><h2 class="section-title">다른 무료 도구</h2><div class="other-grid">
+<a href="https://jaewoo0317.github.io/salary-calculator/" class="other-card"><span class="other-icon">💰</span><div><div class="other-name">연봉 실수령액</div><div class="other-desc">2025년 4대보험 반영 세후 월급</div></div></a>
+<a href="https://jaewoo0317.github.io/percent-calculator/" class="other-card"><span class="other-icon">🔢</span><div><div class="other-name">퍼센트 계산기</div><div class="other-desc">할인율, 증감률, 비율 계산</div></div></a>
+<a href="https://jaewoo0317.github.io/unit-converter/" class="other-card"><span class="other-icon">📏</span><div><div class="other-name">단위 변환기</div><div class="other-desc">길이·무게·온도·부피 변환</div></div></a>
+</div></section>
+
+<div class="ad-banner"><ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-dY7YmaHnk31ijIwa" data-ad-width="300" data-ad-height="250"></ins><script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script></div>
+</main>
+
+<footer class="footer"><div class="footer-inner"><div class="footer-col"><a href="https://jaewoo0317.github.io/" class="footer-logo">J<span>WAY</span></a><p>매일 필요한 실용 도구를 무료로 제공합니다. 모든 계산은 브라우저에서 처리되며 개인정보를 수집하지 않습니다.</p></div><div class="footer-col"><a href="https://jaewoo0317.github.io/char-counter/">글자수 세기</a><a href="https://jaewoo0317.github.io/date-calculator/">날짜 계산기</a><a href="https://jaewoo0317.github.io/percent-calculator/">퍼센트 계산기</a><a href="https://jaewoo0317.github.io/salary-calculator/">연봉 실수령액</a><a href="https://jaewoo0317.github.io/bmi-calculator/">BMI 계산기</a><a href="https://jaewoo0317.github.io/exchange-rate/">환율 계산기</a><a href="https://jaewoo0317.github.io/unit-converter/">단위 변환기</a><a href="https://jaewoo0317.github.io/privacy-policy.html">개인정보처리방침</a></div></div><div class="footer-bottom">© 2025 JWAY. All rights reserved.</div></footer>
+
+<script>
+let gender='male';
+function fmt(n){return n.toFixed(1)}
+function setH(v){document.getElementById('heightInput').value=v;calc()}
+function setW(v){document.getElementById('weightInput').value=v;calc()}
+function setGender(g){gender=g;document.getElementById('gMale').classList.toggle('active',g==='male');document.getElementById('gFemale').classList.toggle('active',g==='female');calc()}
+function categorize(bmi){if(bmi<18.5)return{name:'저체중',color:'#60A5FA'};if(bmi<23)return{name:'정상',color:'#10B981'};if(bmi<25)return{name:'과체중',color:'#FBBF24'};if(bmi<30)return{name:'비만 1단계',color:'#F97316'};if(bmi<35)return{name:'비만 2단계',color:'#EF4444'};return{name:'고도비만',color:'#DC2626'}}
+function calc(){const h=parseFloat(document.getElementById('heightInput').value);const w=parseFloat(document.getElementById('weightInput').value);if(!h||!w||h<50||w<10)return;const hm=h/100;const bmi=w/(hm*hm);const cat=categorize(bmi);document.getElementById('bmiValue').textContent=fmt(bmi);document.getElementById('bmiCategory').textContent=cat.name;document.getElementById('bmiCategory').style.color=cat.color;// bar position: map 15~40 to 0~100%
+const pct=Math.max(0,Math.min(100,(bmi-15)/(40-15)*100));document.getElementById('bmiBar').style.left=pct+'%';const lo=fmt(18.5*hm*hm);const hi=fmt(23*hm*hm);document.getElementById('idealRange').textContent=lo+' ~ '+hi+' kg';const idealMid=21*hm*hm;const diff=w-idealMid;let diffText,diffSub='현재 체중: '+fmt(w)+' kg';if(bmi>=18.5&&bmi<23){diffText='정상 범위';diffSub+=' · BMI '+fmt(bmi)}else if(bmi<18.5){diffText='+'+fmt(18.5*hm*hm-w)+' kg 증량 권장';diffSub+=' · 저체중'}else{diffText='-'+fmt(w-23*hm*hm)+' kg 감량 권장';diffSub+=' · '+cat.name}document.getElementById('diffValue').textContent=diffText;document.getElementById('diffSub').textContent=diffSub}
+function toggleFaq(el){el.parentElement.classList.toggle('open')}
+document.getElementById('heightInput').addEventListener('input',calc);
+document.getElementById('weightInput').addEventListener('input',calc);
+document.getElementById('ageInput').addEventListener('input',calc);
+calc();
+</script></body></html>
